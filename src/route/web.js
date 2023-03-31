@@ -1,6 +1,7 @@
 import express from "express"
 import homeController from "../controllers/homeController";
 import userController from "../controllers/userController";
+import categoryController from "../controllers/categoryController";
 let router = express.Router();
 
 let initWebRoutes = (app) => {
@@ -14,12 +15,18 @@ let initWebRoutes = (app) => {
     router.post('/put-crud', homeController.putCRUD);
     router.get('/delete-crud', homeController.deleteCRUD);
 
-
     router.post('/api/login', userController.handleLogin);
     router.get('/api/get-all-users', userController.handleGetAllUsers);
     router.post('/api/create-new-user', userController.handleCreateNewUser);
     router.put('/api/edit-user', userController.handleEditUser);
     router.delete('/api/delete-user', userController.handleDeleteUser);
+
+    router.get('/api/allcode', userController.getAllCode);
+
+    router.get('/api/get-all-categories', categoryController.handleGetAllCategories);
+    router.post('/api/create-new-category', categoryController.handleCreateNewCategory);
+    router.put('/api/edit-category', categoryController.handleEditCategory);
+    router.delete('/api/delete-category', categoryController.handleDeleteCategory);
 
     return app.use("/", router);
 }
