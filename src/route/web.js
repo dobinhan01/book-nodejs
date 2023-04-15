@@ -2,6 +2,7 @@ import express from "express"
 import homeController from "../controllers/homeController";
 import userController from "../controllers/userController";
 import categoryController from "../controllers/categoryController";
+import bookController from "../controllers/bookController";
 let router = express.Router();
 
 let initWebRoutes = (app) => {
@@ -27,6 +28,14 @@ let initWebRoutes = (app) => {
     router.post('/api/create-new-category', categoryController.handleCreateNewCategory);
     router.put('/api/edit-category', categoryController.handleEditCategory);
     router.delete('/api/delete-category', categoryController.handleDeleteCategory);
+    router.get('/api/category-home', categoryController.getCategoryHome);
+
+    router.get('/api/get-all-books', bookController.handleGetAllBooks);
+    router.post('/api/create-new-book', bookController.handleCreateNewBook);
+    router.put('/api/edit-book', bookController.handleEditBook);
+    router.delete('/api/delete-book', bookController.handleDeleteBook);
+    router.get('/api/get-flash-sale-home', bookController.getFlashSaleHome);
+    router.get('/api/get-detail-book-by-id', bookController.getDetailBookById);
 
     return app.use("/", router);
 }

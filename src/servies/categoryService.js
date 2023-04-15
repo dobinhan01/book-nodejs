@@ -1,18 +1,14 @@
 import db from "../models/index";
 
-let getAllCategories = (categoryId) => {
+let getAllCategories = () => {
     return new Promise(async (resolve, reject) => {
         try {
-            let category = '';
-            if (categoryId === 'ALL') {
-                category = await db.Category.findAll();
-            }
-            if (categoryId && categoryId !== 'ALL') {
-                category = await db.Category.findOne({
-                    where: { id: categoryId }
-                })
-            }
-            resolve(category);
+            let categories = await db.Category.findAll();
+            resolve({
+                errCode: 0,
+                message: 'ok',
+                categories
+            });
         } catch (e) {
             reject(e)
         }
@@ -43,7 +39,7 @@ let createNewCategory = (data) => {
             if (check === true) {
                 resolve({
                     errCode: 1,
-                    message: 'Your category is already in used, Plz try another category'
+                    errMessage: 'Your category is already in used, Plz try another category'
                 })
             } else {
                 await db.Category.create({
@@ -63,7 +59,6 @@ let createNewCategory = (data) => {
 let updateCategory = (data) => {
     return new Promise(async (resolve, reject) => {
         try {
-            console.log('and', data)
             if (!data.id || !data.categoryName) {
                 resolve({
                     errCode: 2,
@@ -76,9 +71,7 @@ let updateCategory = (data) => {
             })
             if (category) {
                 category.categoryName = data.categoryName;
-
                 await category.save();
-
                 resolve({
                     errCode: 0,
                     message: 'Update category sucessed!'
@@ -117,9 +110,27 @@ let deleteCategory = (categoryId) => {
     })
 }
 
+let getCategoryHome = (limit) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            let categories = await db.Category.findAll({
+                limit: limit,
+                order: [['createdAt', 'DESC']],
+            })
+            resolve({
+                errCode: 0,
+                data: categories
+            })
+        } catch (e) {
+            reject(e);
+        }
+    })
+}
+
 module.exports = {
     getAllCategories: getAllCategories,
     createNewCategory: createNewCategory,
     updateCategory: updateCategory,
     deleteCategory: deleteCategory,
+    getCategoryHome: getCategoryHome,
 }

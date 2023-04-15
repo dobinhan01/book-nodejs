@@ -1,45 +1,70 @@
 import categoryService from "../servies/categoryService";
 
 let handleGetAllCategories = async (req, res) => {
-    let id = req.query.id;
-
-    if (!id) {
-
+    try {
+        let categories = await categoryService.getAllCategories();
+        return res.status(200).json(categories);
+    } catch (e) {
+        console.log(e)
         return res.status(200).json({
-            errCode: 1,
-            errMessage: 'Missing required parameters',
-            categories: []
+            errCode: -1,
+            errMessage: 'Error from the server...',
         })
     }
-
-    let categories = await categoryService.getAllCategories(id);
-    return res.status(200).json({
-        errCode: 0,
-        errMessage: 'ok',
-        categories
-    })
 }
 
 let handleCreateNewCategory = async (req, res) => {
-    let message = await categoryService.createNewCategory(req.body);
-    return res.status(200).json(message);
+    try {
+        let category = await categoryService.createNewCategory(req.body);
+        return res.status(200).json(category);
+    } catch (e) {
+        console.log(e)
+        return res.status(200).json({
+            errCode: -1,
+            errMessage: 'Error from the server...',
+        })
+    }
 }
 
 let handleEditCategory = async (req, res) => {
-    let message = await categoryService.updateCategory(req.body);
-    // console.log('check', message)
-    return res.status(200).json(message);
+    try {
+        let message = await categoryService.updateCategory(req.body);
+        return res.status(200).json(message);
+    } catch (e) {
+        console.log(e)
+        return res.status(200).json({
+            errCode: -1,
+            errMessage: 'Error from the server...',
+        })
+    }
 }
 
 let handleDeleteCategory = async (req, res) => {
-    if (!req.body.id) {
+    try {
+        let message = await categoryService.deleteCategory(req.body.id);
+        return res.status(200).json(message);
+    } catch (e) {
+        console.log(e)
         return res.status(200).json({
-            errCode: 1,
-            message: "Missing required parameters!"
+            errCode: -1,
+            errMessage: 'Error from the server...',
         })
     }
-    let message = await categoryService.deleteCategory(req.body.id);
-    return res.status(200).json(message);
+}
+
+let getCategoryHome = async (req, res) => {
+    let limit = req.query.limit;
+    if (!limit) limit = 6;
+    try {
+        let response = await categoryService.getCategoryHome(+limit);
+        return res.status(200).json(response);
+    } catch (e) {
+        console.log(e)
+        return res.status(200).json({
+            errCode: -1,
+            message: 'Error from server...',
+        })
+    }
 }
 
 module.exports = {
@@ -47,4 +72,5 @@ module.exports = {
     handleCreateNewCategory: handleCreateNewCategory,
     handleEditCategory: handleEditCategory,
     handleDeleteCategory: handleDeleteCategory,
+    getCategoryHome: getCategoryHome,
 }
