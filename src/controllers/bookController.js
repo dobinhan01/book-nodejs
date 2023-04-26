@@ -40,14 +40,16 @@ let handleEditBook = async (req, res) => {
 }
 
 let handleDeleteBook = async (req, res) => {
-    if (!req.body.id) {
+    try {
+        let message = await bookService.deleteBook(req.body.id);
+        return res.status(200).json(message);
+    } catch (e) {
+        console.log(e)
         return res.status(200).json({
-            errCode: 1,
-            message: "Missing required parameters!"
+            errCode: -1,
+            errMessage: 'Error from the server...',
         })
     }
-    let message = await bookService.deleteBook(req.body.id);
-    return res.status(200).json(message);
 }
 
 let getFlashSaleHome = async (req, res) => {
@@ -78,6 +80,19 @@ let getDetailBookById = async (req, res) => {
     }
 }
 
+let getBookByCategory = async (req, res) => {
+    try {
+        let info = await bookService.getBookByCategory(req.query.categoryId);
+        return res.status(200).json(info);
+    } catch (e) {
+        console.log(e)
+        return res.status(200).json({
+            errCode: -1,
+            message: 'Error from server...',
+        })
+    }
+}
+
 module.exports = {
     handleGetAllBooks: handleGetAllBooks,
     handleCreateNewBook: handleCreateNewBook,
@@ -85,4 +100,5 @@ module.exports = {
     handleDeleteBook: handleDeleteBook,
     getFlashSaleHome: getFlashSaleHome,
     getDetailBookById: getDetailBookById,
+    getBookByCategory: getBookByCategory,
 }

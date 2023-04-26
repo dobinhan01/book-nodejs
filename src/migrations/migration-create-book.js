@@ -17,17 +17,20 @@ module.exports = {
             publisher: {
                 type: Sequelize.STRING
             },
-            image: {
-                type: Sequelize.BLOB('long')
-            },
             price: {
-                type: Sequelize.STRING
+                type: Sequelize.INTEGER
+            },
+            priceNew: {
+                type: Sequelize.INTEGER
             },
             discount: {
                 type: Sequelize.STRING
             },
             categoryId: {
                 type: Sequelize.INTEGER
+            },
+            image: {
+                type: Sequelize.BLOB('long')
             },
             contentHTML: {
                 type: Sequelize.TEXT('long')
