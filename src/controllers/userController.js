@@ -1,52 +1,48 @@
 import userService from "../servies/userService";
 
-let handleLogin = async (req, res) => {
-    let email = req.body.email;
-    let password = req.body.password;
+let getCurrentUser = async (req, res) => {
+    let email = req.user.email;
+    try {
+        let response = await userService.getCurrentUserService(email);
+        return res.status(200).json(response);
 
-    if (!email || !password) {
-        return res.status(500).json({
-            errCode: 1,
-            message: 'Missing inputs parameter!',
-        })
-    }
-
-    let userData = await userService.handleUserLogin(email, password);
-    //check email exist
-    //commpare password
-    //return userInfor
-    //access_token: JWT json web token
-
-    return res.status(200).json({
-        errCode: userData.errCode,
-        message: userData.errMessage,
-        user: userData.user ? userData.user : {}
-    })
-}
-
-let handleGetAllUsers = async (req, res) => {
-    let id = req.query.id;
-
-    if (!id) {
-
+    } catch (e) {
+        console.log(e)
         return res.status(200).json({
-            errCode: 1,
-            errMessage: 'Missing required parameters',
-            users: []
+            errCode: -1,
+            errMessage: 'Error from the server...',
+        })
+    }
+}
+
+let getAllUsers = async (req, res) => {
+    try {
+        const page = req.query.page;
+        let response = await userService.getAllUsers(page);
+        return res.status(200).json(response);
+
+    } catch (e) {
+        console.log(e)
+        return res.status(200).json({
+            errCode: -1,
+            errMessage: 'Error from the server...',
         })
     }
 
-    let users = await userService.getAllUsers(id);
-    return res.status(200).json({
-        errCode: 0,
-        errMessage: 'ok',
-        users
-    })
 }
 
-let handleCreateNewUser = async (req, res) => {
-    let message = await userService.createNewUser(req.body);
-    return res.status(200).json(message);
+let postCreateUser = async (req, res) => {
+    try {
+        let response = await userService.createUser(req.body);
+        return res.status(200).json(response);
+
+    } catch (e) {
+        console.log(e)
+        return res.status(200).json({
+            errCode: -1,
+            errMessage: 'Error from the server...',
+        })
+    }
 }
 
 let handleEditUser = async (req, res) => {
@@ -79,9 +75,8 @@ let getAllCode = async (req, res) => {
 }
 
 module.exports = {
-    handleLogin: handleLogin,
-    handleGetAllUsers: handleGetAllUsers,
-    handleCreateNewUser: handleCreateNewUser,
+    getCurrentUser,
+    getAllUsers, postCreateUser,
     handleEditUser: handleEditUser,
     handleDeleteUser: handleDeleteUser,
     getAllCode: getAllCode,
