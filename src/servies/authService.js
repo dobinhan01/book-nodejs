@@ -73,15 +73,14 @@ let loginService = (email, password) => {
                         message: 'Wrong password'
                     })
                 } else {
-                    let accessToken = generateAccessToken(user);
-                    let refreshToken = generateRefreshToken(user);
-                    const { password, ...others } = user
+                    let token = generateAccessToken(user);
+                    // let refreshToken = generateRefreshToken(user);
+                    // const { password, ...others } = user
                     resolve({
                         errCode: 0,
                         message: 'ok',
-                        data: { ...others },
-                        accessToken,
-                        refreshToken
+                        token,
+                        // refreshToken
                     })
                 }
             }
@@ -103,7 +102,7 @@ let requestRefreshToken = (refreshToken) => {
                 resolve({
                     errCode: 0,
                     message: 'ok',
-                    accessToken: newAccessToken,
+                    token: newAccessToken,
                     newRefreshToken
                 })
             })

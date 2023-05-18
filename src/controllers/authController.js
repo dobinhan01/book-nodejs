@@ -1,7 +1,7 @@
 import authService from "../servies/authService";
 let register = async (req, res) => {
-    let { name, email, password } = req.body;
     try {
+        let { name, email, password } = req.body;
         if (!name || !email || !password) {
             return res.status(200).json({
                 errCode: 1,
@@ -21,23 +21,23 @@ let register = async (req, res) => {
 }
 
 let login = async (req, res) => {
-    let { email, password } = req.body;
     try {
+        let { email, password } = req.body;
         if (!email || !password) {
             return res.status(200).json({
                 errCode: 1,
-                errMessage: 'Missing required parameters!',
+                message: 'Missing required parameters!',
             })
         }
         let response = await authService.loginService(email, password);
-        let { refreshToken, ...others } = response;
-        res.cookie('refreshToken', refreshToken, {
-            httpOnly: true,
-            secure: false,
-            path: '/',
-            samSite: 'strict'
-        })
-        return res.status(200).json({ ...others });
+        // let { refreshToken, ...others } = response;
+        // res.cookie('refreshToken', refreshToken, {
+        //     httpOnly: true,
+        //     secure: false,
+        //     path: '/',
+        //     samSite: 'strict'
+        // })
+        return res.status(200).json(response);
 
     } catch (e) {
         console.log(e)

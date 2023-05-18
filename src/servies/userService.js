@@ -49,7 +49,7 @@ let getAllUsers = (page) => {
     return new Promise(async (resolve, reject) => {
         try {
             let users = [];
-            let per_page = 3;
+            let per_page = 6;
             let total = await db.User.count();
             let total_pages = total % per_page === 0 ? total / per_page : Math.floor(total / per_page) + 1;
             if (!page) {
@@ -84,32 +84,27 @@ let getAllUsers = (page) => {
     })
 }
 
-let createUser = (data) => {
+let postCreateUser = (data) => {
     return new Promise(async (resolve, reject) => {
         try {
-            //check email is exist
-            let check = await checkUserEmail(data.email);
-            if (check === true) {
+            let checkUserEmail = await db.User.findOne({ where: { email: data.email } });
+            if (checkUserEmail) {
                 resolve({
-                    errCode: 1,
+                    errCode: 2,
                     message: 'Your email is already in used, Plz try another email'
                 })
             } else {
                 let hashPasswordFromBcrypt = await hashPassword(data.password);
-                await db.User.create({
+                let user = await db.User.create({
+                    name: data.name,
                     email: data.email,
                     password: hashPasswordFromBcrypt,
-                    firstName: data.firstName,
-                    lastName: data.lastName,
-                    address: data.address,
-                    phonenumber: data.phonenumber,
-                    gender: data.gender,
-                    roleId: data.roleId,
-                    image: data.avatar
+                    roleId: 'R2',
                 })
                 resolve({
                     errCode: 0,
-                    message: 'ok'
+                    message: 'ok',
+                    data: user
                 })
             }
         } catch (e) {
@@ -118,35 +113,20 @@ let createUser = (data) => {
     })
 }
 
-let updateUser = (data) => {
+let putEditUser = (data) => {
     return new Promise(async (resolve, reject) => {
         try {
-            if (!data.id || !data.roleId || !data.gender || !data.phonenumber) {
-                resolve({
-                    errCode: 2,
-                    errMessage: 'Missing required parameters'
-                });
-            }
             let user = await db.User.findOne({
                 where: { id: data.id },
                 raw: false
             })
             if (user) {
-                user.firstName = data.firstName;
-                user.lastName = data.lastName;
-                user.address = data.address;
-                user.roleId = data.roleId;
-                user.gender = data.gender;
-                user.phonenumber = data.phonenumber;
-                if (data.avatar) {
-                    user.image = data.avatar;
-                }
-
+                user.name = data.name;
                 await user.save();
 
                 resolve({
                     errCode: 0,
-                    message: 'Update user sucessed!'
+                    message: 'Update user sucessed!',
                 })
             } else {
                 resolve({
@@ -160,25 +140,24 @@ let updateUser = (data) => {
     })
 }
 
-let deleteUser = (userId) => {
+let deleteUser = (id) => {
     return new Promise(async (resolve, reject) => {
-        let user = await db.User.findOne({
-            where: { id: userId }
-        })
-        if (!user) {
+        try {
+            let user = await db.User.findOne({ where: { id } })
+            if (!user) {
+                resolve({
+                    errCode: 2,
+                    errMessage: `The user isn't exist `
+                })
+            }
+            await db.User.destroy({ where: { id } });
             resolve({
-                errCode: 2,
-                errMessage: `The user isn't exist `
+                errCode: 0,
+                message: `The user is deleted`
             })
+        } catch (e) {
+            reject(e)
         }
-        await db.User.destroy({
-            where: { id: userId }
-        });
-
-        resolve({
-            errCode: 0,
-            message: `The user is deleted`
-        })
     })
 }
 
@@ -208,8 +187,8 @@ let getAllCodeService = (typeInput) => {
 module.exports = {
     getCurrentUserService,
     getAllUsers: getAllUsers,
-    createUser,
-    updateUser: updateUser,
+    postCreateUser,
+    putEditUser,
     deleteUser: deleteUser,
     getAllCodeService: getAllCodeService,
 }

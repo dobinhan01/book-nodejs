@@ -30,7 +30,8 @@ module.exports = {
         type: Sequelize.BLOB('long')
       },
       roleId: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING,
+        defaultValue: 'R2'
       },
       createdAt: {
         allowNull: false,

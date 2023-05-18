@@ -33,7 +33,14 @@ let getAllUsers = async (req, res) => {
 
 let postCreateUser = async (req, res) => {
     try {
-        let response = await userService.createUser(req.body);
+        let { name, email, password } = req.body;
+        if (!name || !email || !password) {
+            return res.status(200).json({
+                errCode: 1,
+                errMessage: 'Missing required parameters!',
+            })
+        }
+        let response = await userService.postCreateUser(req.body);
         return res.status(200).json(response);
 
     } catch (e) {
@@ -45,20 +52,46 @@ let postCreateUser = async (req, res) => {
     }
 }
 
-let handleEditUser = async (req, res) => {
-    let message = await userService.updateUser(req.body);
-    return res.status(200).json(message);
-}
+let putEditUser = async (req, res) => {
+    try {
+        let { id, name } = req.body;
+        if (!id || !name) {
+            return res.status(200).json({
+                errCode: 1,
+                errMessage: 'Missing required parameters!',
+            })
+        }
+        let response = await userService.putEditUser(req.body);
+        return res.status(200).json(response);
 
-let handleDeleteUser = async (req, res) => {
-    if (!req.body.id) {
+    } catch (e) {
+        console.log(e)
         return res.status(200).json({
-            errCode: 1,
-            message: "Missing required parameters!"
+            errCode: -1,
+            errMessage: 'Error from the server...',
         })
     }
-    let message = await userService.deleteUser(req.body.id);
-    return res.status(200).json(message);
+}
+
+let deleteUser = async (req, res) => {
+    try {
+        let { id } = req.query;
+        if (!id) {
+            return res.status(200).json({
+                errCode: 1,
+                errMessage: 'Missing required parameters!',
+            })
+        }
+        let response = await userService.deleteUser(req.query.id);
+        return res.status(200).json(response);
+
+    } catch (e) {
+        console.log(e)
+        return res.status(200).json({
+            errCode: -1,
+            errMessage: 'Error from the server...',
+        })
+    }
 }
 
 let getAllCode = async (req, res) => {
@@ -77,7 +110,6 @@ let getAllCode = async (req, res) => {
 module.exports = {
     getCurrentUser,
     getAllUsers, postCreateUser,
-    handleEditUser: handleEditUser,
-    handleDeleteUser: handleDeleteUser,
+    putEditUser, deleteUser,
     getAllCode: getAllCode,
 }
